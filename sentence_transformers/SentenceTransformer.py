@@ -580,7 +580,8 @@ class SentenceTransformer(nn.Sequential):
             show_progress_bar: bool = True,
             checkpoint_path: str = None,
             checkpoint_save_steps: int = 500,
-            checkpoint_save_total_limit: int = 0
+            checkpoint_save_total_limit: int = 0,
+            train_callback: Optional[Callable[[int, int, float], None]] = None,
             ):
         """
         Train the model with the given training objective
@@ -718,6 +719,9 @@ class SentenceTransformer(nn.Sequential):
 
                     if not skip_scheduler:
                         scheduler.step()
+
+                    if train_callback is not None:
+                        train_callback(train_idx, epoch, training_steps, float(loss_value))
 
                 training_steps += 1
                 global_step += 1
